@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: "en-US" }}">
+  <head>
+
+      <style>
+          @import url('https://fonts.googleapis.com/css?family=Lato');
+          @import url('https://fonts.googleapis.com/css?family=Kalam');
+  
+          * {
+              font-family: 'Lato', sans-serif;
+              color: rgba(34, 110, 147, 1);
+              line-height: 1.1;
+          }
+  
+          .name {
+              width: 100%;
+              text-align: center;
+              padding-top: 3%;
+              padding-bottom: 3%;
+              font-size: 60px;
+              font-weight: 300;
+          }
+  
+          .photo {
+              width: 50%;
+              text-align: right;
+              padding-right: 1%;
+  
+          }
+  
+          .short-bio {
+              padding-left: 1%;
+              font-size: 40px;
+              font-weight: 100;
+          }
+  
+          .frase {
+              font-size: 20px;
+              color: rgb(102, 100, 100);
+              font-style: italic;
+          }
+  
+          .right-container {
+              height: 100%;
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
+          }
+  
+          .social {
+              vertical-align: text-bottom;
+              padding-left: 25%;
+          }
+  
+          .goto-blog {
+              font-size: 30px;
+              color: rgb(102, 100, 100);
+              font-family: 'Kalam', sans-serif;
+              text-align: right;
+          }
+  
+          .bottom-container {
+              flex-direction: row;
+              width: 100%;
+              height: 100%;
+              align-items: flex-end;
+          }
+  
+          .location {
+              text-align: center;
+              width: 100%;
+              font-size: 15px;
+              padding-top: 5%;
+          }
+      </style>
+
+
+    <meta charset="UTF-8">
+
+{% seo %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#157878">
+    <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
+  </head>
+  <body>
+    <section class="name">
+      <div class="name">{{ site.title | default: site.github.repository_name }}</h1>
+      <h2 class="project-tagline">{{ site.description | default: site.github.project_tagline }}</h2>
+    </section>
+
+    <section class="main-content">
+      Posts
+      
+    <ul>
+      {% for post in site.posts %}
+        <li>
+          <a href="{{ post.url }}">{{ post.title }}  {{post.date}}</a>
+        </li>
+      {% endfor %}
+    </ul>
+      <footer class="site-footer">
+        {% if site.github.is_project_page %}
+          <span class="site-footer-owner"><a href="{{ site.github.repository_url }}">{{ site.github.repository_name }}</a> is maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a>.</span>
+        {% endif %}
+      </footer>
+    </section>
+
+    {% if site.google_analytics %}
+      <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', '{{ site.google_analytics }}', 'auto');
+        ga('send', 'pageview');
+      </script>
+    {% endif %}
+  </body>
+</html>
