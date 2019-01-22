@@ -25,9 +25,9 @@ linkedin_username: antraf
 
 # Build settings
 markdown: kramdown
-theme: jekyll-theme-primer
+#theme: jekyll-theme-primer
 #theme: minima
-#theme: jekyll-theme-cayman
+theme: jekyll-theme-cayman
 plugins:
   - jekyll-feed
 
