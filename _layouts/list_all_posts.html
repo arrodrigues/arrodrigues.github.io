@@ -17,16 +17,16 @@
       width: 100%;
       text-align: center;
       padding-top: 2%;
-      padding-bottom: 3%;
+      padding-bottom: 0%;
       font-size: 60px;
       font-weight: 300;
+      vertical-align: middle;
     }
 
     .photo {
       width: 50%;
       text-align: right;
       padding-right: 1%;
-
     }
 
     .short-bio {
@@ -35,10 +35,12 @@
       font-weight: 100;
     }
 
-    .frase {
-      font-size: 20px;
+    .tagline {
+      font-size: 25px;
       color: rgb(102, 100, 100);
-      font-style: italic;
+      font-family: 'Kalam', Verdana, Geneva, Tahoma, sans-serif;
+      padding-top: 1%;
+      text-align: right;
     }
 
     .right-container {
@@ -74,13 +76,43 @@
       padding-top: 5%;
     }
 
-    .project-tagline {
-      text-align: right;
-    }
-
     .top-container {
       max-width: 100%;
       width: 100%;
+    }
+
+    .avatar img {
+      border-radius: 50%;
+    }
+
+    .avatar {
+      text-align: center;
+    }
+
+    .archive h1 {
+      margin-left: 12%;
+    }
+
+    .archive {
+      padding-top: 2%;
+    }
+    
+    .date-line {
+      border-bottom-style: groove;
+      border-bottom-width: 1px;
+      border-bottom-color: black;
+      margin-bottom: 2%;
+      margin-top: 4%;
+    }
+    
+    #post-title {
+      font-size: 20px;
+      margin-bottom: 1%;
+      text-decoration: none;
+    }
+
+    #post-title :hover {
+      color: rgb(58, 155, 204);
     }
   </style>
 
@@ -99,35 +131,45 @@
 
 <body>
   <div class="container-fluid">
-    <div class="name row justify-content-center">
-      <div class="col"></div>
-      <div class="col-6">{{ site.title | default: site.github.repository_name }}</div>
-      <div class="col"></div>
-    </div>
-    <div class="row justify-content-end">
-      <div class="col"></div>
-      <div class="col-6"></div>
-      <div class="col">{{ site.description | default: site.github.project_tagline }}</div>
+    <div class="row justify-content-center">
+      <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 avatar"><img alt="Avatar" src="/assets/images/avatar.png" /></div>
+      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+        <div class="name">
+          {{ site.title | default: site.github.repository_name }}
+        </div>
+        <div class="tagline">
+          {{ site.description | default: site.github.project_tagline }}
+        </div>
+      </div>
+      <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2"></div>
     </div>
   </div>
 
-  <section class="main-content">
-    Posts
+    <div class="container-fluid archive">
+      <h1>Archive</h1>
+    </div>
+    <div class="container post-list">
+      {% assign lastDate = Nil %}
 
-    <ul>
       {% for post in site.posts %}
-      <li>
-        <a href="{{ post.url }}">{{ post.title }} {{post.date}}</a>
-      </li>
-      {% endfor %}
-    </ul>
-    <footer class="site-footer">
-      {% if site.github.is_project_page %}
-      <span class="site-footer-owner"><a href="{{ site.github.repository_url }}">{{ site.github.repository_name }}</a>
-        is maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a>.</span>
+      {% assign currentDate = post.date | date: "%Y" %}
+      {% if currentDate != lastDate %}
+      {% assign lastDate = currentDate %}
+      <div class="row justify-content-start date-line"><h3>{{ currentDate }}</h3></div>
       {% endif %}
-    </footer>
-  </section>
+      <div class="row justify-content-start post-title-row">
+        <a id="post-title" href="{{ post.url }}">{{ post.title }}</a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    {% if site.github.is_project_page %}
+    <span class="site-footer-owner"><a href="{{ site.github.repository_url }}">{{ site.github.repository_name }}</a>
+      is maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a>.</span>
+    {% endif %}
+  </footer>
 
   {% if site.google_analytics %}
   <script>
