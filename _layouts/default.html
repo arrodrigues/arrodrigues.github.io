@@ -3,6 +3,7 @@
 
 <head>
 
+
   <style>
     @import url('https://fonts.googleapis.com/css?family=Lato');
     @import url('https://fonts.googleapis.com/css?family=Kalam');
@@ -29,20 +30,30 @@
       margin-top: 4%;
     }
 
-    #post-title {
-      font-size: 20px;
-      margin-bottom: 1%;
-      text-decoration: none;
+    .title {
+      font-size: 45px;
+      text-align: center;
     }
 
-    #post-title :hover {
-      color: rgb(58, 155, 204);
+    .post-meta {
+      text-align: right;
+      color: rgba(0, 0, 139, 0.527);
+    }
+
+    .first-row {
+      margin-top: 20px;
+    }
+
+    .to-archive {
+      text-align: center;
+      font-size: 40px;
+    }
+
+    .main-content {
+      margin: 0px !important;
     }
   </style>
-
-
   <meta charset="UTF-8">
-
   {% seo %}
   {% include favicon.html %}
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -57,35 +68,32 @@
 </head>
 
 <body>
+
   {% include header.html %}
 
-  <div class="container-fluid archive">
-    <h1>Archives</h1>
-  </div>
-  <div class="container post-list">
-    {% assign lastDate = Nil %}
-
-    {% for post in site.posts %}
-    {% assign currentDate = post.date | date: "%Y" %}
-    {% if currentDate != lastDate %}
-    {% assign lastDate = currentDate %}
-    <div class="row justify-content-start date-line">
-      <h3>{{ currentDate }}</h3>
+  <div class="container-fluid">
+    <div class="row justify-content-center first-row">
+      <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 to-archive"><a href="/allposts">Archives</a></div>
+      <div class="title col-lg-6 col-md-6 col-sm-6 col-xs-6">{{page.title}}</div>
+      <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2"></div>
+      <div class="w-100"></div>
+      <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2"></div>
+      <div class="post-meta col-lg-6 col-md-6 col-sm-6 col-xs-6">{{page.date | date: "%Y-%m-%d"}}</div>
+      <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2"></div>
     </div>
-    {% endif %}
-    <div class="row justify-content-start post-title-row">
-      <a id="post-title" href="{{ post.url }}">{{ post.title }}</a>
-    </div>
-    {% endfor %}
   </div>
-  </div>
+  <div class="container-fluid">
+    <div class="row justify-content-center">
+      <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2"></div>
+      <div class="main-content col-lg-6 col-md-6 col-sm-6 col-xs-6">
+        {{content }}
+        <footer class="site-footer">
 
-  <footer class="site-footer">
-    {% if site.github.is_project_page %}
-    <span class="site-footer-owner"><a href="{{ site.github.repository_url }}">{{ site.github.repository_name }}</a>
-      is maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a>.</span>
-    {% endif %}
-  </footer>
+        </footer>
+      </div>
+      <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2"></div>
+    </div>
+  </div>
 
   {% if site.google_analytics %}
   <script>
