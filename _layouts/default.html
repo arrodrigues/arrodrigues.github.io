@@ -52,6 +52,9 @@
     .main-content {
       margin: 0px !important;
     }
+    .main-content h1, .main-content h2, .main-content h3, .main-content h4, .main-content h5, .main-content h6{
+      color: rgba(34, 110, 147, 1) !important;
+    }
   </style>
   <meta charset="UTF-8">
   {% seo %}
@@ -59,10 +62,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#157878">
   <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-    crossorigin="anonymous">
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="/assets/css/header.css">
   <link rel="stylesheet" type="text/css" href="/assets/javascript/soc.js-master/soc.min.css">
 </head>
@@ -73,7 +76,7 @@
 
   <div class="container-fluid">
     <div class="row justify-content-center first-row">
-      <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 to-archive"><a href="/allposts">Archives</a></div>
+      <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 to-archive"><a href="/allposts.html">Archives</a></div>
       <div class="title col-lg-6 col-md-6 col-sm-6 col-xs-6">{{page.title}}</div>
       <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2"></div>
       <div class="w-100"></div>
