@@ -1,0 +1,19 @@
+<div class="panel-group">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <button data-toggle="collapse" data-target="#{{include.toggle-name}}" >
+          {% if include.button-text %} {{include.button-text}} {% else %} Open {% endif %}
+        </button>
+      </h4>
+    </div>
+    <div id="{{include.toggle-name}}" style="max-height: 10;" class="panel-collapse collapse">
+      <div class="panel-body"  >{{include.toggle-text | markdownify }}</div>
+      <div class="panel-footer">
+            <button data-toggle="collapse" data-target="#{{include.toggle-name}}" >
+              Close - {{include.footer}}
+            </button>
+      </div>
+    </div>
+  </div>
+</div>
