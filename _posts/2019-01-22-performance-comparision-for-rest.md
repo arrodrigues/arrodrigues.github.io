@@ -1013,5 +1013,5 @@ Não encontrei dados muito relevantes nas saídas dos comandos *pistat*, portant
 
 ## Palavras finais 
 Como eu já disse anteriormente, esses testes não são e nem tem a pretensão de ser conclusivos. Quem tem um pouco de experiencia com esse tipo de benchmarking sabe que uma pequena alteração na rede, no sistema operacional, na versão do framework ou em configurações, pode alterar totalmente o resultado final.
-O principal objetivo desse post é de apresentar os meus testes de forma reproduzível. Ou seja, se você gostaria de ver por sí mesmo os resultados, ou melhorar o teste em algum aspecto, as aplicações estão no GitHub e o roteiro de testes se encontra no inicio desse post. Peço apenas que você compartilhe os resultados, pois eu estarei bastante interessado em novas visões sobre esses cenários.
+O principal objetivo desse post é de apresentar os meus testes de forma reproduzível. Portanto, se você gostaria de ver por sí mesmo os resultados, ou melhorar o teste em algum aspecto, as aplicações estão no GitHub e o roteiro de testes se encontra no inicio desse post. Peço apenas que você compartilhe os resultados, pois eu estarei bastante interessado em novas visões sobre esses cenários.
 
