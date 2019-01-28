@@ -1,63 +1,34 @@
 ---
 layout: default
-title: "Breve comparação de performance entre Node.js, Vert.x e Spring WebFlux"
+title: "Comparação de performance entre Node.js, Node.js Express, Vert.x e Spring WebFlux"
 date: 2019-01-24
 categories: [posts]
-tags: [performance, vert.x, spring webflux, node.js, express, wrk]
+tags: [performance, vert.x, spring webflux, node.js, express, wrk, httperf]
 ---
 
-Enquanto eu estudava sobre o desenvolvimento de APIs Rest com Node.Js, encontrei muitos artigos que apontam uma grande perda de performance nas aplicações que utilizam o framework **Express**, quando comparadas às aplicações NodeJs puro. Realizei então, alguns testes de performance simples, utilizando a ferramenta wrk. Os presentes testes não pretendem, de forma alguma, ser conclusivos, mas eu achei importantes o bastante para compartilhar. E para deixar essa minha brincadeira ainda mais divertida, incluí testes com Vert.x e Spring Webflux, que são frameworks da plataforma Java que também se propõem ao processamento reativo de requisições HTTP com **Event-loop**.
+Enquanto eu estudava sobre o desenvolvimento de APIs Rest com Node.Js, encontrei alguns artigos que indicam uma menor performance das APIs que utilizam o framework **Express**, quando comparadas às aplicações NodeJs puro. E no ímpeto de observar isso com meus próprios olhos, realizei alguns testes  simples com as ferramentas wrk e httperf, no meu próprio notebook. Adicionalmente, para deixar essa  brincadeira ainda mais divertida, incluí testes com Vert.x e Spring Webflux, os quais são frameworks da plataforma Java, que também se propõem ao processamento de requisições HTTP com **Event-loop**.
 
-Para realizar os testes eu criei quatro pequenas aplicações que recebem uma requisição http GET, extraem da requisição o parametro "userName" e respondem com uma frase concatenando o userName recebido. Afim de que o teste tivesse o mínimo de relevância, eu tive o cuidado de garantir que todas as quatro aplicações respondessem com uma mensagem exatamente do mesmo tamanho. 
-As aplicações usadas no teste estão disponíveis no GitHub https://github.com/arrodrigues/benchmarking-experiments-on-simple-rest
-Para garantir que as quatro aplicações respondem exatamente da mesma forma, eu executei o seguinte comando `curl http://localhost:3000/?userName=Antonio --trace-ascii -` uma vez para cada aplicação, rodando uma aplicação por vez. E a saída do comando foi, em todos os casos, a seguinte:
+Para execução dos testes, criei quatro pequenas aplicações, que recebem uma requisição http GET, extraem da requisição o parâmetro "userName" e respondem com uma frase concatenando o userName recebido. Para melhorar a confiabilidade nos resultados, eu garanti que todas as quatro aplicações respondam com uma mensagem exatamente do mesmo tamanho (148 bytes). 
+As aplicações usadas no teste estão disponíveis no GitHub <https://github.com/arrodrigues/benchmarking-experiments-on-simple-rest> .
 
-```
-== Info:   Trying 127.0.0.1...
-== Info: TCP_NODELAY set
-== Info: Connected to localhost (127.0.0.1) port 3000 (#0)
-=> Send header, 95 bytes (0x5f)
-0000: GET /?userName=Antonio HTTP/1.1
-0021: Host: localhost:3000
-0037: User-Agent: curl/7.58.0
-0050: Accept: */*
-005d: 
-<= Recv header, 17 bytes (0x11)
-0000: HTTP/1.1 200 OK
-<= Recv header, 41 bytes (0x29)
-0000: Content-Type: text/plain; charset=utf-8
-<= Recv header, 20 bytes (0x14)
-0000: content-length: 44
-<= Recv header, 24 bytes (0x18)
-0000: Connection: keep-alive
-<= Recv header, 2 bytes (0x2)
-0000: 
-<= Recv data, 44 bytes (0x2c)
-0000: The request for user 'Antonio' was processed
-== Info: Connection #0 to host localhost left intact
-```
-Salvo alguma eventual diferença na ordenação dos itens do cabeçalho ou algumas letras maiúsculas e minúsculas, a resposta tem exatamente o mesmo tamanho e significado.
-
-Elaborei um roteiro de testes que consiste em, em cada uma das quatro aplicações.
+Os seguintes passos foram executados em cada uma das quatro aplicações:
 1. Iniciar a aplicação
-2. Enviar requisições durante 1 minuto em 100 conexões, usando a ferramenta `wrk` com o objetivo de fazer o *warm up* da aplicação.
-3. Iniciar o monitoramento do uso de CPU do processo da aplicação e enviar os resultados para um arquivo.
-4. Enviar requisições com o `wrk` novamente, durante 1 minuto e usando 100 conexões e enviar os resultados para um arquivo.
-5. Com a ferramenta `httperf` enviar 20000 requisições, em 100 conexões diferentes, totalizando 2.000.000 requisições e enviar os resultados para um arquivo.
+2. Enviar requisições durante 1 minuto usando 100 conexões pelo `wrk`, com o objetivo de fazer o *warm up* da aplicação e desprezar os resultados.
+3. Iniciar o monitoramento do uso de CPU pelo processo da aplicação, com a ferramenta `pidstat`.
+4. Enviar requisições com o `wrk` novamente, durante 1 minuto, usando 100 conexões e coletar os resultados.
+5. Com a ferramenta `httperf`, enviar 20.000 requisições, em 100 conexões, totalizando 2.000.000 e coletar os resultados.
 6. Parar a aplicação.
 
-As ferramentas wrk e httperf servem basicamente o mesmo propósito, que é gerar uma grande carga de requisições, mas elas apresentam os resultados de forma diferente e eu achei interessante comparar os resultados das duas. O wrk dispara o máximo de requisições possíveis durante um determinado tempo, no final ele indica quantas requisições foram respondidas. Já o httperf, envia uma quantidade determinada de requisições e apresenta quanto tempo foi gasto para completar todas elas.
+As ferramentas `wrk` e `httperf` servem para gerar grandes cargas de requisições, e dado que elas apresentam os resultados de forma diferente e eu achei interessante comparar os resultados das duas. O `wrk` dispara o máximo de requisições possíveis durante um determinado tempo, no final ele indica quantas requisições foram respondidas. Já o `httperf`, envia uma quantidade determinada de requisições e apresenta quanto tempo foi gasto para completar todas elas.
 
-Segue o roteiro completo, executado à partir do diretório raiz da aplicação. 
-Para a execução do roteiro serão necessários 3 terminais Linux/Unix e cada um dos passos há uma indicação de em qual terminal o comando deverá ser executado. 
-Além disso, para rodar as aplicações você precisará do *npm* instalado na máquina e também do *maven*, com *java 8* ou maior .
-> Cada uma das aplicações, quando iniciada, vai exibir no console o id do processo (PID) , e esse PID deverá ser usado para preencher o passo 3 do roteiro para todas as aplicações.
+Segue o roteiro completo, executado à partir do diretório raiz da aplicação: 
+> Para a execução do roteiro, serão necessários 3 terminais Linux/Unix, e em cada um dos passos indica-se qual terminal deverá receber o comando. Além disso, para rodar as aplicações, você precisará do *npm* instalado na máquina e também do *maven*, com *java 8* ou maior. Cada uma das aplicações, quando iniciada, exibe no console o id do processo (PID) , e esse PID deverá ser usado para preencher o passo *3* do roteiro nas quatro aplicações.
 
 {% capture roteiro-capture %}
 ```
 1. APP_DIR=nodejs-express                                           (term 1, 2, 3)
 2. npm start --prefix $APP_DIR                                      (term 1)
-3. APP_PID=                                                         (term 2, 3)
+3. APP_PID=**ID DO PROCESSO**                                       (term 2, 3)
 4. wrk -d 1m -c 100 -t 100 http://localhost:3000/?userName=Antonio  (term 2)
 5. pidstat -u -p $APP_PID 1 > "${APP_DIR}_cpu_stats.txt"            (term 3) 
 6. wrk -d 1m -c 100 -t 100 http://localhost:3000/?userName=Antonio > "wrk_${APP_DIR}_d1m_c100_t100.txt" (term 2)
@@ -67,7 +38,7 @@ Além disso, para rodar as aplicações você precisará do *npm* instalado na m
 
 1. APP_DIR=nodejs-pure                                              (term 1, 2, 3)
 2. npm start --prefix $APP_DIR                                      (term 1)
-3. APP_PID=                                                         (term 2, 3)
+3. APP_PID=**ID DO PROCESSO**                                       (term 2, 3)
 4. wrk -d 1m -c 100 -t 100 http://localhost:3000/?userName=Antonio  (term 2)
 5. pidstat -u -p $APP_PID 1 > "${APP_DIR}_cpu_stats.txt"            (term 3) 
 6. wrk -d 1m -c 100 -t 100 http://localhost:3000/?userName=Antonio > "wrk_${APP_DIR}_d1m_c100_t100.txt" (term 2)
@@ -77,7 +48,7 @@ Além disso, para rodar as aplicações você precisará do *npm* instalado na m
 
 1. APP_DIR=java-spring-webflux                                      (term 1, 2, 3)
 2. mvn -f $APP_DIR/pom.xml clean compile exec:exec                  (term 1)
-3. APP_PID=                                                         (term 2, 3)
+3. APP_PID=**ID DO PROCESSO**                                       (term 2, 3)
 4. wrk -d 1m -c 100 -t 100 http://localhost:3000/?userName=Antonio  (term 2)
 5. pidstat -u -p $APP_PID 1 > "${APP_DIR}_cpu_stats.txt"            (term 3) 
 6. wrk -d 1m -c 100 -t 100 http://localhost:3000/?userName=Antonio > "wrk_${APP_DIR}_d1m_c100_t100.txt" (term 2)
@@ -87,7 +58,7 @@ Além disso, para rodar as aplicações você precisará do *npm* instalado na m
 
 1. APP_DIR=java-vertx                                               (term 1, 2, 3)
 2. mvn -f $APP_DIR/pom.xml clean compile exec:exec                  (term 1)
-3. APP_PID=                                                         (term 2, 3)
+3. APP_PID=**ID DO PROCESSO**                                       (term 2, 3)
 4. wrk -d 1m -c 100 -t 100 http://localhost:3000/?userName=Antonio  (term 2)
 5. pidstat -u -p $APP_PID 1 > "${APP_DIR}_cpu_stats.txt"            (term 3) 
 6. wrk -d 1m -c 100 -t 100 http://localhost:3000/?userName=Antonio > "wrk_${APP_DIR}_d1m_c100_t100.txt" (term 2)
@@ -97,12 +68,13 @@ Além disso, para rodar as aplicações você precisará do *npm* instalado na m
 {% endcapture %}
 {% include widgets/toggle-panel.html toggle-name="roteiro-toggle" button-text="Clique para ver o roteiro" toggle-text=roteiro-capture  footer="Roteiro" %}
 
-Ao fim desse roteiro temos 3 arquivos de dados coletados para cada aplicação, totalizando 12 arquivos. Eles estão colapsados para melhorar a leitura, sinta-se à vontade para pular direto para a parte dos dados consolidados. Os dados estão organizados ferramenta e aplicação.
+Ao fim desse roteiro, temos 3 arquivos de dados coletados para cada aplicação, totalizando 12 arquivos:
 
 
-### wrk
 
-##### nodejs-express
+## Resultados do `wrk`
+---
+##### Aplicação NodeJS com Express (nodejs-express)
 ```
 Running 1m test @ http://localhost:3000/?userName=Antonio
   100 threads and 100 connections
@@ -114,7 +86,7 @@ Requests/sec:  27637.66
 Transfer/sec:      3.90MB
 
 ```
-##### nodejs-pure
+##### Aplicação somente NodeJS (nodejs-pure)
 ```
 Running 1m test @ http://localhost:3000/?userName=Antonio
   100 threads and 100 connections
@@ -125,7 +97,7 @@ Running 1m test @ http://localhost:3000/?userName=Antonio
 Requests/sec:  31283.18
 Transfer/sec:      4.42MB
 ```
-##### java-spring-webflux
+##### Aplicação Java com WebFlux (java-spring-webflux)
 ```
 Running 1m test @ http://localhost:3000/?userName=Antonio
   100 threads and 100 connections
@@ -136,7 +108,7 @@ Running 1m test @ http://localhost:3000/?userName=Antonio
 Requests/sec:  34005.94
 Transfer/sec:      4.80MB
 ```
-##### java-vertx
+##### Aplicação Java com Vert.X (java-vertx)
 ```
 Running 1m test @ http://localhost:3000/?userName=Antonio
   100 threads and 100 connections
@@ -148,9 +120,10 @@ Requests/sec:  69094.37
 Transfer/sec:      9.75MB
 ```
 
-### httperf
+## Resultados do `httperf`
+---
 
-##### nodejs-express
+##### Aplicação NodeJS com Express (nodejs-express)
 ```
 httperf --client=0/1 --server=localhost --port=3000 --uri=/?userName=Antonio --send-buffer=4096 --recv-buffer=16384 --num-conns=100 --num-calls=20000
 Maximum connect burst length: 1
@@ -176,7 +149,7 @@ Net I/O: 6571.9 KB/s (53.8*10^6 bps)
 Errors: total 0 client-timo 0 socket-timo 0 connrefused 0 connreset 0
 Errors: fd-unavail 0 addrunavail 0 ftab-full 0 other 0
 ```
-##### nodejs-pure
+##### Aplicação Somente NodeJS (nodejs-pure)
 ```
 httperf --client=0/1 --server=localhost --port=3000 --uri=/?userName=Antonio --send-buffer=4096 --recv-buffer=16384 --num-conns=100 --num-calls=20000
 Maximum connect burst length: 1
@@ -203,7 +176,7 @@ Errors: total 0 client-timo 0 socket-timo 0 connrefused 0 connreset 0
 Errors: fd-unavail 0 addrunavail 0 ftab-full 0 other 0
 
 ```
-##### java-spring-webflux
+##### Aplicação Java com WebFlux (java-spring-webflux)
 ```
 httperf --client=0/1 --server=localhost --port=3000 --uri=/?userName=Antonio --send-buffer=4096 --recv-buffer=16384 --num-conns=100 --num-calls=20000
 Maximum connect burst length: 1
@@ -231,7 +204,7 @@ Errors: fd-unavail 0 addrunavail 0 ftab-full 0 other 0
 
 ```
 
-##### java-vertx
+##### Aplicação Java com Vert.X (java-vertx)
 ```
 httperf --client=0/1 --server=localhost --port=3000 --uri=/?userName=Antonio --send-buffer=4096 --recv-buffer=16384 --num-conns=100 --num-calls=20000
 Maximum connect burst length: 1
@@ -258,8 +231,8 @@ Errors: total 0 client-timo 0 socket-timo 0 connrefused 0 connreset 0
 Errors: fd-unavail 0 addrunavail 0 ftab-full 0 other 0
 ```
 
-### Pidstats
-
+## Resultados do `pidstat`
+---
 {% capture nodejs-express-pidstats %}
 ```
 04:22:27 PM   UID       PID    %usr %system  %guest   %wait    %CPU   CPU  Command
@@ -1007,24 +980,38 @@ Average:     1000     16395   42,50   36,97    0,00    0,00   79,47     -  java
 {% include widgets/toggle-panel.html toggle-name="java-vertx-pidstats-toggle" button-text="Java Vert.X" toggle-text=java-vertx-pidstats  footer="Fim do pidstats do Java Vert.X" %}
 
 ## Consolidação dos dados
-
+---
 Para consolidar os dados, fiz uma tabela com as seguintes informações:
 
 1.  Dos resultados do *wrk*.
     1. Latency Avg. (Linha latency, Coluna Avg) 
     2. Latency Max. (Linha latency, Coluna Max)
-    3. Requests/sec 1
+    3. Requests/sec
 
-2. Dos resultados do httperf
+2. Dos resultados do *httperf*
     1. Reply rate avg
-    2. Requests/sec 2
-    3. Connection time median
+    2. Connection time median
 
 
 
-| Aplicação | Latency Avg | Latency Max | Requests 1 | Reply rate avg | Connection time median
+| Aplicação | Latency Avg | Latency Max | Requests | Reply rate avg | Connection time median
 | -- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | nodejs-express      | 3,62ms | 21,84ms |27.637,66/s|29.665,2/s|673,5ms|
 | nodejs-pure         | 3,20ms | 15,90ms |31.283,18/s|34.739,1/s|584,5ms|
 | java-spring-webflux | 3,41ms | 56,95ms |34.005,94/s|18.240,9/s|1.091,5ms|
 | java-vertx          | 1,47ms | 17,43ms |69.094,37/s|45.974,1/s|431,5ms|
+
+## Conclusão
+---
+Como eu já havia lido em alguns blogs, a aplicação Node com Express teve o desempenho um pouco inferior à aplicação com NodeJS puro. 
+
+Já a aplicação Java com Vert.x destacou-se em quase todas as métricas escolhidas, porém, a latência máxima ficou um pouco acima da aplicação NodeJS puro. Talvez seja possível melhorar essa métrica (possivelmente em detrimento de outras) regulando parâmetros do Garbage Collector da JVM.
+
+A aplicação Java com Spring Webflux teve o  pior desempenho nesses testes.
+
+Não encontrei dados muito relevantes nas saídas dos comandos *pistat*, portanto não foram incluídos na consolidação. Todas as quatro aplicações usaram praticamente uma 1 CPU inteira.
+
+## Palavras finais 
+Como eu já disse anteriormente, esses testes não são e nem tem a pretensão de ser conclusivos. Quem tem um pouco de experiencia com esse tipo de benchmarking sabe que uma pequena alteração na rede, no sistema operacional, na versão do framework ou em configurações, pode alterar totalmente o resultado final.
+O principal objetivo desse post é de apresentar os meus testes de forma reproduzível. Ou seja, se você gostaria de ver por sí mesmo os resultados, ou melhorar o teste em algum aspecto, as aplicações estão no GitHub e o roteiro de testes se encontra no inicio desse post. Peço apenas que você compartilhe os resultados, pois eu estarei bastante interessado em novas visões sobre esses cenários.
+
